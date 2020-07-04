@@ -3,6 +3,7 @@ const path = require('path');
 const cors = require('cors');
 const PORT = process.env.PORT || 5000;
 
+const InboxItems = require('./inbox');
 
 const app = express();
 
@@ -13,8 +14,10 @@ const user = {
   class: "developer",
   level: 1
 }
-app.get('/',(req, res) => res.send(user));
+app.get('/',(req, res) => res.send(InboxItems));
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
+
+
 
 /*
 express()
