@@ -4,9 +4,9 @@ const cors = require('cors');
 const PORT = process.env.PORT || 5000;
 
 
-const Inbox = require('./Inbox');
-const Tasks = require('./Tasks');
-const Projects = require('./Projects');
+const Inbox = require('./Inbox.js');
+const Tasks = require('./Tasks.js');
+const Projects = require('./Projects.js');
 
 const database = {};
 
