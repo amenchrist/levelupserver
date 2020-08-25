@@ -1,9 +1,9 @@
 const INBOX_ITEM = 'INBOX_ITEM';
 const UNPROCESSED = 'UNPROCESSED';
 
-exports.InboxItems = InboxItems;
 
-const InboxItems = [
+
+const Inbox = [
     {
         type: INBOX_ITEM,
         id: 1,
@@ -85,3 +85,5 @@ const InboxItems = [
         status: UNPROCESSED
     }
 ]
+
+exports.Inbox = Inbox;

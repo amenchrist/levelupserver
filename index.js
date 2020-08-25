@@ -3,7 +3,14 @@ const path = require('path');
 const cors = require('cors');
 const PORT = process.env.PORT || 5000;
 
-const InboxItems = require('./inbox');
+
+const Inbox = require('./Inbox');
+const Tasks = require('./Tasks');
+const Projects = require('./Projects');
+
+const database = {};
+
+const db = Object.assign(database, Inbox, Tasks, Projects);
 
 const app = express();
 
@@ -14,7 +21,8 @@ const user = {
   class: "developer",
   level: 1
 }
-app.get('/',(req, res) => res.send(InboxItems));
+//console.log(db)
+app.get('/',(req, res) => res.send(db));
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
 
