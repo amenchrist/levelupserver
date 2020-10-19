@@ -1,9 +1,13 @@
 const INBOX_ITEM = 'INBOX_ITEM';
 const UNPROCESSED = 'UNPROCESSED';
 
+const ting = require('./index.js')
+
+console.log('From Inbox.js: ',ting)
 
 
-const Inbox = [
+exports.Inbox = [
+ting,
     {
         type: INBOX_ITEM,
         id: 1,
@@ -86,4 +90,4 @@ const Inbox = [
     }
 ]
 
-exports.Inbox = Inbox;
+//exports.Inbox = Inbox;

@@ -1,0 +1,7 @@
+const INBOX_ITEM = 'INBOX_ITEM';
+const UNPROCESSED = 'UNPROCESSED';
+const TASK = 'TASK';
+const LOW = 'LOW';
+const DAILY = 'DAILY';
+const PROJECT = 'PROJECT';
+const UNPLANNED = 'UNPLANNED';
