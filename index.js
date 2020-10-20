@@ -323,7 +323,19 @@ app.get('/',(req, res) => res.send(records));
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
 app.post('/amen', (req, res) => {
-	records.content = req.body;
+	const package  = req.body;
+	switch(package.type){
+		case INBOX_ITEM:
+		records.Inbox.unshift(package);
+		break;
+		case TASK:
+		records.Tasks.unshift(package);
+		break;
+		case PROJECT:
+		records.Projects.unshift(package);
+		break;
+		default:
+	}
 	res.json(records);
 })
 
