@@ -305,7 +305,9 @@ const records = {
         },
         taskList: []
     }
-    ]
+    ],
+    References: [],
+    Processed: []
 }
 
 const app = express();
@@ -324,15 +326,40 @@ app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
 app.post('/amen', (req, res) => {
 	const package  = req.body;
-	switch(package.type){
-		case INBOX_ITEM:
-		records.Inbox.unshift(package);
+    console.log(package);
+    let indx;
+	switch(package.action){
+		case 'ADD':
+		  records[package.list].unshift(package.item);
+          console.log('Package added');
+          console.log('New Records: ', records[package.list])
 		break;
-		case TASK:
-		records.Tasks.unshift(package);
+		case 'REMOVE':
+        
+        for (i=0; i<records[package.list].length; i++){
+            if (records[package.list][i].id === package.item.id){
+                indx = i;
+            }
+        }
+        console.log('Package to be removed is at location: ', indx);
+		  records[package.list].splice(indx,1);
+          console.log('Package removed');
+          console.log('New Records: ', records[package.list])
+
+          if (package.list === "Inbox"){
+            records.Processed.unshift(package.item);
+            console.log("All Records: ", records);
+          }
 		break;
-		case PROJECT:
-		records.Projects.unshift(package);
+		case 'UPDATE':
+            for (i=0; i<records[package.list].length; i++){
+                if (records[package.list][i].id === package.item.id){
+                    indx = i;
+                }
+            }  
+		  records[package.list][indx] = package.item;
+          console.log('Record Updated');
+          console.log('New Records: ', records[package.list])
 		break;
 		default:
 	}
