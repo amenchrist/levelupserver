@@ -45,7 +45,7 @@ app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
 app.post('/amen', (req, res) => {
 	const package  = req.body;
-    console.log(package);
+    //console.log(package);
     let indx;
 	switch(package.action){
 		case 'ADD':
@@ -61,7 +61,7 @@ app.post('/amen', (req, res) => {
                 indx = i;
             }
         }
-        console.log('Package to be removed is at location: ', indx);
+        //console.log('Package to be removed is at location: ', indx);
           records[package.list].splice(indx,1);
           //console.log('Package removed');
           //console.log('New Records: ', records[package.list])
