@@ -29,7 +29,6 @@ app.use(cors());
 function updateDB() {
     fs.writeFileSync('tempDB.txt', JSON.stringify(records))
         //console.log('Hello World > helloworld.txt');
-    
 }
 
 
