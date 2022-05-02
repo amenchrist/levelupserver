@@ -1,0 +1,14 @@
+let rec = {
+	"lastUpdated":0,
+	"exp":0,
+	"Inbox":[],
+	"Tasks":[],
+	"Missions":[],
+	"References":[],
+	"Someday":[],
+	"WaitingFor":[],
+	"Reminders":[],
+	"Processed":[],
+	"Completed":[],
+	"Trash":[]
+}

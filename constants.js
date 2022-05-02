@@ -3,5 +3,5 @@ const UNPROCESSED = 'UNPROCESSED';
 const TASK = 'TASK';
 const LOW = 'LOW';
 const DAILY = 'DAILY';
-const PROJECT = 'PROJECT';
+const MISSION = 'MISSION';
 const UNPLANNED = 'UNPLANNED';
