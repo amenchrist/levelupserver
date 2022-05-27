@@ -1,7 +1,7 @@
 const INBOX_ITEM = 'INBOX_ITEM';
 const UNPROCESSED = 'UNPROCESSED';
 
-const ting = require('./index.js')
+const ting = require('../index.js')
 
 console.log('From Inbox.js: ',ting)
 

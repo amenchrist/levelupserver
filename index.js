@@ -13,121 +13,17 @@ let localDB = "mongodb://localhost:27017/levelUpDB";
 let onlineDB = "mongodb+srv://amenchrist:Admin2000@cluster0.yqpye.mongodb.net/levelUpDB";
 
 mongoose.connect(onlineDB, {useNewUrlParser: true});
+const db = mongoose.connection;
 
-const usersSchema = new Schema ({
-  id: Number,
-  name: String
-})
+db.on('error', error => console.error(error));
+db.once('open', () => console.log('Connected to MongoDB'))
 
-const inboxSchema = new Schema ({
-  type : String,
-  id : Number,
-  entryDate : Number,
-  name : String,
-  description : String,
-  status : String,
-  isTrashed: Boolean,
-  trashedDate: String,
-  processedDate: String
-})
-
-const taskSchema = new Schema ({
-  type : String,
-  id : Number,
-  entryDate : Number,
-  status : String,
-  frequency : String,
-  priority : String,
-  outcomeRecordID : Number,
-  name : String,
-  outcome : String,
-  requiredContext : String,
-  note : String,
-  dueDate : String,
-  timeRequired : Number,
-  associatedMissionID : Number,
-  requirements : String,
-  exp : Number,
-  isTrashed: Boolean,
-  trashedDate: String,
-  doneDate: String,
-  timeSpent: Number,
-  activeSince: Number,
-  order: Number
-})
-
-const missionSchema = new Schema ({
-  type : String,
-  id : Number,
-  entryDate: Number,
-  status :String,
-  
-  name : String,
-  purpose: String,
-  vision: String,
-  principles: String,
-  toDo: String,
-  skillsRequired: String,
-  infoRequired: String,
-  abilityRequired: String,
-  dueDate : String,
-  taskList :[ Number ],
-
-  backStory : String,
-  outputRef : Number,
-  outputRecordUrl: String,
-  
-  timeRequired : Number,
-  timeSpent: Number,
-
-  requirements: String,
-  priority: String,
-  frequency: String,
-  note: String,
-  
-  isTrashed: Boolean,
-  trashedDate: String,
-  doneDate: String,
-
-  exp : Number,
-})
-
-const referenceSchema = new Schema ({
-  type : String,
-  id : Number,
-  entryDate : Number,
-  name : String,
-  details : String,
-  exp : Number,
-  isTrashed: Boolean
-})
-
-const eventSchema = new Schema ({
-  type : String,
-  id : Number,
-  entryDate : Number,
-  name : String,
-  date : String,
-  time: String,
-  location: String,
-  frequency: String,
-  exp : Number,
-  note : String,
-  isTrashed: Boolean,
-  trashedDate: String
-})
-
-
-
-const Mission = mongoose.model("Mission", missionSchema);
-
-const Task = mongoose.model("Task", taskSchema);
-
-const Inbox = mongoose.model("Entry", inboxSchema);
-
-const Reference = mongoose.model("Reference", referenceSchema);
-
-const Event = mongoose.model("Event", eventSchema);
+const User = require('./Models/User');
+const Mission = require('./Models/Mission');
+const Task = require('./Models/Task');
+const Inbox = require('./Models/Inbox');
+const Reference = require('./Models/Reference');
+const Event = require('./Models/Event');
 
 
 /**
@@ -141,14 +37,6 @@ const Event = mongoose.model("Event", eventSchema);
  * event
  * 
  */
-
-const INBOX_ITEM = 'INBOX_ITEM';
-const UNPROCESSED = 'UNPROCESSED';
-const TASK = 'TASK';
-const LOW = 'LOW';
-const DAILY = 'DAILY';
-const PROJECT = 'PROJECT';
-const UNPLANNED = 'UNPLANNED';
 
 //let records = JSON.parse(fs.readFileSync('./tempDB.txt', {encoding: 'utf-8', flag: 'r'}));
 
@@ -269,20 +157,13 @@ function updateDB() {
         //console.log('Hello World > helloworld.txt');
 }
 
-
-
 const user = {
   name: "amenchrist",
   class: "developer",
   level: 1
 }
-//console.log(db)
-//Send Records to client when home page is requested
-//console.log(records)
+
 app.get('/',(req, res) => res.send(getRecords()));
-
-
-
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
 let lists = {}
@@ -291,17 +172,6 @@ lists["Tasks"] = Task;
 lists["Missions"] = Mission;
 lists["Events"] = Event;
 lists["References"] = Reference;
-
-let sampleInbox = {
-  type:"INBOX_ITEM",
-  id:9,
-  entryDate:1212123443,
-  name:"Random Input 898989898989898989898989899",
-  description:"Optional details on input",
-  status:"UNPROCESSED",
-  isTrashed:true,
-  trashedDate:1650546433134
-}
 
 app.post('/amen', (req, res) => {
 	const package  = req.body;
