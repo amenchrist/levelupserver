@@ -1,3 +1,7 @@
+if(process.env.NODE_ENV !== 'production'){
+  require('dotenv').config()
+}
+
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -8,11 +12,7 @@ const mongoose = require("mongoose");
 const { stringify } = require('querystring');
 const Schema = mongoose.Schema;
 
-
-let localDB = "mongodb://localhost:27017/levelUpDB";
-let onlineDB = "mongodb+srv://amenchrist:Admin2000@cluster0.yqpye.mongodb.net/levelUpDB";
-
-mongoose.connect(onlineDB, {useNewUrlParser: true});
+mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true});
 const db = mongoose.connection;
 
 db.on('error', error => console.error(error));
@@ -25,25 +25,6 @@ const Inbox = require('./Models/Inbox');
 const Reference = require('./Models/Reference');
 const Event = require('./Models/Event');
 
-
-/**
- * 
- * required schemas:
- * Users
- * inbox,
- * task
- * mission
- * reference
- * event
- * 
- */
-
-//let records = JSON.parse(fs.readFileSync('./tempDB.txt', {encoding: 'utf-8', flag: 'r'}));
-
-//Inbox.insertMany(records.Inbox);
-//Task.insertMany(records.Tasks);
-//Mission.insertMany(records.Missions)
-
 // Record.create({
 //   lastUpdated: 0,
 //   exp:0,
@@ -52,11 +33,6 @@ const Event = require('./Models/Event');
 //   Missions: records.Missions,
 //   References: records.References,
 //   Events: records.Events,
-//   "Someday":[],
-//   "WaitingFor":[],
-//   "Processed":[],
-//   "Completed":[],
-//   "Trash":[]
 // }, err => {
 //   if (err){
 //     return console.log
@@ -67,7 +43,6 @@ const Event = require('./Models/Event');
 let records = {};
 
 function getRecords(){
-
   //console.log("Fetching Records from Database...")
 
   records.Completed = [];
@@ -75,10 +50,7 @@ function getRecords(){
   records.Someday = [];
   records.WaitingFor = [];
   records.exp = 0;
-  
   records.wasChanged = false;
-
-  //console.log(records);
   
   Inbox.find((err, record) => {
     if (err){
@@ -88,14 +60,12 @@ function getRecords(){
       records.Inbox = record;
       console.log("Connected to Database")
 
-
       Task.find((err, record) => {
         if (err){
           console.log(err);
         } else{
           records.Tasks = record;
           //console.log("Got Tasks");
-
 
           Mission.find((err, record) => {
             if (err){
@@ -104,14 +74,12 @@ function getRecords(){
               records.Missions = record;
               //console.log("Got Missions");
 
-
               Event.find((err, record) => {
                 if (err){
                   console.log(err);
                 } else{
                   records.Events = record;
                   //console.log("Got Events");
-
 
                   Reference.find((err, record) => {
                     if (err){
@@ -147,21 +115,9 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
-
 // Record.updateOne({name: "New things are gwan"}, {name: "Glooorraayyyy"}, (err,res) => {
 //   err? console.log(err) : console.log("Update successful")
 // })
-
-function updateDB() {
-    fs.writeFileSync('tempDB.txt', JSON.stringify(records))
-        //console.log('Hello World > helloworld.txt');
-}
-
-const user = {
-  name: "amenchrist",
-  class: "developer",
-  level: 1
-}
 
 app.get('/',(req, res) => res.send(getRecords()));
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
@@ -175,7 +131,6 @@ lists["References"] = Reference;
 
 app.post('/amen', (req, res) => {
 	const package  = req.body;
-  let indx;
   console.log(`Item`, package.item)
   switch(package.action){
 		case 'ADD':
@@ -190,40 +145,6 @@ app.post('/amen', (req, res) => {
           return console.log(err);
         } else {
           console.log(`an item was removed from ${package.list}`);
-          //lists[package.list].find((err,rec)=> console.log(rec))
-          
-          // Trash.find((err, record) => {
-          //   if (err){
-          //     console.log(err);
-          //   } else{
-          //     console.log("trash can", record)
-          //     record = record[0];
-          //     switch(package.item.type){
-          //       case "INBOX_ITEM":
-          //         console.log(package.item)
-          //         record.inbox.push(package.item);
-          //         record.save();
-          //       break;
-          //       case "TASK":
-          //         record.tasks.push(package.item);
-          //         record.save();
-          //       break;
-          //       case "MISSION":
-          //         record.missions.push(package.item);
-          //         record.save();
-          //       break;
-          //       case "EVENT":
-          //         record.events.push(package.item);
-          //         record.save();
-          //       break;
-          //       case "REFERENCE":
-          //         record.references.push(package.item);
-          //         record.save();
-          //       break;
-          //       default:
-          //     }
-          //   }
-          // })
           res.json(getRecords());
         }
       });
