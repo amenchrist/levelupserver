@@ -1,0 +1,21 @@
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+    "password": "levelup"
+}
+
+######
+
+GET http://localhost:5000/
+
+#######
+
+POST http://localhost:5000/agents/
+Content-Type: application/json
+
+{
+  "id": "1",
+  "name": "Amen",
+  "password": "levelup"
+}

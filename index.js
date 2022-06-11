@@ -11,6 +11,7 @@ const fs = require('fs');
 const mongoose = require("mongoose");
 const { stringify } = require('querystring');
 const Schema = mongoose.Schema;
+const bcrypt = require('bcrypt');
 
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true});
 const db = mongoose.connection;
@@ -18,31 +19,15 @@ const db = mongoose.connection;
 db.on('error', error => console.error(error));
 db.once('open', () => console.log('Connected to MongoDB'))
 
-const User = require('./Models/User');
+const Agent = require('./Models/Agent');
 const Mission = require('./Models/Mission');
 const Task = require('./Models/Task');
 const Inbox = require('./Models/Inbox');
 const Reference = require('./Models/Reference');
 const Event = require('./Models/Event');
 
-// Record.create({
-//   lastUpdated: 0,
-//   exp:0,
-//   Inbox: records.Inbox,
-//   Tasks: records.Tasks,
-//   Missions: records.Missions,
-//   References: records.References,
-//   Events: records.Events,
-// }, err => {
-//   if (err){
-//     return console.log
-//   } else {
-//     console.log("New Record Inserted. Try typing db.records.find()")
-//   }
-// })
-let records = {};
-
-function getRecords(){
+async function getRecords(){
+  let records = {};
   //console.log("Fetching Records from Database...")
 
   records.Completed = [];
@@ -50,76 +35,34 @@ function getRecords(){
   records.Someday = [];
   records.WaitingFor = [];
   records.exp = 0;
-  records.wasChanged = false;
-  
-  Inbox.find((err, record) => {
-    if (err){
-      console.log(err);
-    } else{
-      //console.log("Got Inbox");
-      records.Inbox = record;
-      console.log("Connected to Database")
 
-      Task.find((err, record) => {
-        if (err){
-          console.log(err);
-        } else{
-          records.Tasks = record;
-          //console.log("Got Tasks");
-
-          Mission.find((err, record) => {
-            if (err){
-              console.log(err);
-            } else{
-              records.Missions = record;
-              //console.log("Got Missions");
-
-              Event.find((err, record) => {
-                if (err){
-                  console.log(err);
-                } else{
-                  records.Events = record;
-                  //console.log("Got Events");
-
-                  Reference.find((err, record) => {
-                    if (err){
-                      console.log(err);
-                    } else{
-                      records.References = record;
-                      //console.log("Got References");
-                      records.wasChanged = true;
-                      //console.log("Got all the records");
-                      records.lastUpdated = new Date().toLocaleString();
-                    }
-                  })
-                }
-              })
-            }
-          })
-        }
-      })
-    }
-  })
-  
-  if(!records.wasChanged){
-    return records
-  }else {
-    getRecords(records);
-  }
+  try {
+    records.Inbox = await Inbox.find();
+    records.Tasks = await Task.find();
+    records.Missions = await Mission.find();
+    records.Events = await Event.find();
+    records.References = await Reference.find();
+    records.lastUpdated = new Date().toLocaleString();
+  } catch (err) {
+    console.log(err);
+  }  
+  return records
 }
-
-records = getRecords();
 
 const app = express();
 app.use(bodyParser.json());
 
 app.use(cors());
 
-// Record.updateOne({name: "New things are gwan"}, {name: "Glooorraayyyy"}, (err,res) => {
-//   err? console.log(err) : console.log("Update successful")
-// })
-
-app.get('/',(req, res) => res.send(getRecords()));
+app.get('/',async (req, res) => {
+  try {
+    let data = await getRecords();
+    res.send(data)
+  }
+  catch{
+    res.status(500).send()
+  }
+  });
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
 
 let lists = {}
@@ -163,3 +106,39 @@ app.post('/amen', (req, res) => {
 	}
 	
 })
+
+app.post('/agents', ( async (req, res) => {
+  console.log(req.body)
+  try{
+    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+    Agent.create({
+      id: req.body.id,
+      name: req.body.name,
+      password: hashedPassword
+    })
+    res.send('New Agent Added')
+  } catch {
+    res.send('Something went wrong')
+  }
+}))
+
+app.post('/login', ( async (req, res) => {
+  console.log(req.body)
+  try{
+    console.log('getting agent');
+    Agent.find( { id: "1" }, async function (err, agent) {
+      if (err){
+        console.log(err)
+      } else {
+        agent = agent[0];
+        if (await bcrypt.compare(req.body.password, agent.password) ){
+          res.send('Success')      
+        } else {
+          res.send('Incorrect')
+        }
+      }
+    });
+  } catch {
+    res.send('Something went wrong')
+  }
+}))
